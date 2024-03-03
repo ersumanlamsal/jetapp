@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  width:100%;
+  overflow: hidden;
+  float: left;
+
+}
+.container{
+  padding:20px;
+}
