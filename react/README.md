@@ -1,1 +1,1 @@
-Monday.com React App for jetpack App.
+Monday.com React App for jetpackApp.

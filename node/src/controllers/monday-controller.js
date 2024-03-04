@@ -16,7 +16,7 @@ async function executeAction(req, res) {
     mongoServices.syncWithMongo(values,boardId,itemId);
 
     //handle duplicates
-    const success = await mondayService.handleDuplicates(shortLivedToken,values,itemId,columnId,groupId,boardId);
+    await mondayService.handleDuplicates(shortLivedToken,values,itemId,columnId,groupId,boardId);
 
 
     return res.status(200).send({message:'Action executed successfully'});

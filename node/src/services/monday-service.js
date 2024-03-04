@@ -2,6 +2,7 @@ const initMondayClient = require('monday-sdk-js');
 const logService = require('../services/log-services');
 const { Storage } = require('@mondaycom/apps-sdk');
 
+/* get changed item value from monday */
 const getChangedValue = async (token, itemId) => {
   try {
     const mondayClient = initMondayClient();
@@ -29,6 +30,8 @@ const getChangedValue = async (token, itemId) => {
     return {};
   }
 };
+/* check and handle duplicate values */
+
 const handleDuplicates = async (token, values, itemId, columnId, groupId, boardId) => {
   try {
     let config = await getConfigurations(token);
@@ -45,25 +48,27 @@ const handleDuplicates = async (token, values, itemId, columnId, groupId, boardI
     logService.error(err);
   }
 }
+/* check the status type column and change the value according to config  */
 const changeItemStatusAsConfig = async (token,values,itemId,boardId,value)=>{
 
   try {
     const mondayClient = initMondayClient();
     mondayClient.setToken(token);
     let statusCol = getStatusColumn(values);
-    console.log(value);
     const query = `mutation {
       change_simple_column_value (item_id:${itemId}, board_id:${boardId}, column_id:"${statusCol}", value: "${value}") {
         id
       }
     }`;
     let response = await mondayClient.api(query);
-    console.log(response);
 
   } catch (error) {
     logService.error(error);
   }
 }
+
+/* move duplicate item to the group according to config  */
+
 const moveItemToConfigGroup = async (token,itemId,moveGroupId)=>{
   try {
     const mondayClient = initMondayClient();
