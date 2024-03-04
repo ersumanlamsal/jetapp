@@ -1,5 +1,5 @@
 const mondayService = require('../services/monday-service');
-const transformationService = require('../services/transformation-service');
+const mongoServices = require('../services/mongo-service');
 
 async function executeAction(req, res) {
   const { shortLivedToken } = req.session;
@@ -7,25 +7,25 @@ async function executeAction(req, res) {
 
   try {
     const { inputFields } = payload;
-    const { boardId, itemId, sourceColumnId, targetColumnId } = inputFields;
+    const { boardId, itemId, columnId, groupId } = inputFields;
 
-    const text = await mondayService.getColumnValue(shortLivedToken, itemId, sourceColumnId);
-    // if (!text) {
-    //   return res.status(200).send({});
-    // }
-    // const transformedText = transformationService.transformText(
-    //   text,
-    //   transformationType ? transformationType.value : 'TO_UPPER_CASE'
-    // );
+    //get changed value with respective column details
+    const values = await mondayService.getChangedValue(shortLivedToken, itemId);
 
-    // await mondayService.changeColumnValue(shortLivedToken, boardId, itemId, targetColumnId, transformedText);
+    // sync data with mongodb
+    mongoServices.syncWithMongo(values,boardId,itemId);
 
-    return res.status(200).send({text:text});
+    //handle duplicates
+    const success = await mondayService.handleDuplicates(shortLivedToken,values,itemId,columnId,groupId,boardId);
+
+
+    return res.status(200).send({message:'Action executed successfully'});
   } catch (err) {
     console.error(err);
     return res.status(500).send({ message: 'internal server error' });
   }
 }
+
 
 module.exports = {
   executeAction
